@@ -1,5 +1,7 @@
 # Tic Tac Toe
 
+### Link deployed: https://thanhtratictactoe.netlify.app/
+
 This project was implemented at week 1st in Advanced Web Programming course.
 
 There are some pictures that I had implemented:
