@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { calculateWinner } from "../calc/calculate";
 import ToggleButton from "../UI/ToggleButton";
 import Board from "./Board";
 import Message from "./Message";
+import classes from './Game.module.css'
 
 const initialState = {
   history: [
@@ -45,7 +46,13 @@ const Game = () => {
       stepNumber: step,
       xIsNext: step % 2 === 0,
     });
+    setShowMessage(true);
   };
+
+  const newGame=()=>{
+    setGame(initialState);
+    setShowMessage(true);
+  }
 
   const closeMessgaeHandler = () => {
     setShowMessage(false);
@@ -82,7 +89,7 @@ const Game = () => {
   let message;
   if (winner) {
     status = "Winner is " + winner.winner;
-    message = <Message message={status} win={true} onClose={closeMessgaeHandler} />
+    message = <Message message={status} win={true}  newGame={newGame} onClose={closeMessgaeHandler} />
 
 
   } else {
@@ -92,7 +99,7 @@ const Game = () => {
 
   if (isEnd && !winner) {
 
-    message = <Message message='Oh Tie...!' win={false} onClose={closeMessgaeHandler} />
+    message = <Message message='Oh Tie...!' win={false} newGame={newGame} onClose={closeMessgaeHandler} />
 
   }
 
@@ -129,22 +136,27 @@ const Game = () => {
         : "Go to game start";
     return (
       <li key={step}>
-        <button onClick={() => jumpTo(step)}>{desc}</button>
+        <button className={classes.move} onClick={() => jumpTo(step)}>{desc}</button>
       </li>
     );
   })
 
   return (
+    <div className="total">
+      <h1 className="title-game">Tic Tac Toe</h1>
+
     <div className="game">
+      
       <div className="game-board">
         <Board squares={current.squares} selectedSquare={game.currenPos} onClick={(i) => handleClick(i)} winPath={winner ? winner.path : null} />
       </div>
       <div className="game-info">
-        <div>{status}</div>
+        <h1>{status}</h1>
         <ToggleButton onClick={sortHandler} isAsc={game.isAsc} />
         <ol>{moves_tmp}</ol>
       </div>
       {showMessgae&&message}
+    </div>
     </div>
   );
 };
