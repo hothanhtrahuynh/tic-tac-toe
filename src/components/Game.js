@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { calculateWinner } from "../calc/calculate";
 import ToggleButton from "../UI/ToggleButton";
 import Board from "./Board";
+import Message from "./Message";
 
 const initialState = {
   history: [
@@ -10,7 +11,7 @@ const initialState = {
     },
   ],
   stepNumber: 0,
-  currenPos:null,
+  currenPos: null,
   isAsc: true,
   xIsNext: true,
 };
@@ -25,8 +26,15 @@ const sortMoves = (moves, ascending) => {
   });
 };
 
+const checkFullStep = (currentBoard) => {
+
+  return !currentBoard.includes(null);
+}
+
 const Game = () => {
   const [game, setGame] = useState(initialState);
+
+  const [showMessgae, setShowMessage] = useState(true);
 
   const history = game.history;
   const current = history[game.stepNumber];
@@ -38,6 +46,10 @@ const Game = () => {
       xIsNext: step % 2 === 0,
     });
   };
+
+  const closeMessgaeHandler = () => {
+    setShowMessage(false);
+  }
 
   const sortHandler = () => {
     setGame({ ...game, isAsc: !game.isAsc });
@@ -57,36 +69,49 @@ const Game = () => {
           squares: squares,
         },
       ]),
-      currenPos:i,
+      currenPos: i,
       stepNumber: history.length,
       xIsNext: !game.xIsNext,
     });
   };
 
+  const isEnd = checkFullStep(current.squares);
+
   const winner = calculateWinner(current.squares);
   let status;
+  let message;
   if (winner) {
-    status = "Winner: " + winner.winner;
+    status = "Winner is " + winner.winner;
+    message = <Message message={status} win={true} onClose={closeMessgaeHandler} />
+
+
   } else {
     status = "Next player: " + (game.xIsNext ? "X" : "O");
+  }
+
+
+  if (isEnd && !winner) {
+
+    message = <Message message='Oh Tie...!' win={false} onClose={closeMessgaeHandler} />
+
   }
 
   let listMoves = [];
 
   const movesHistory = () => {
 
-   history.map((step, move, history) => {
+    history.map((step, move, history) => {
       const current = history[move].squares;
       const pre = history[move > 0 ? move - 1 : 0].squares;
 
       for (let index = 0; index < current.length; index++) {
         if (current[index] !== null && current[index] !== pre[index]) {
-          listMoves.push( {
+          listMoves.push({
             step: move,
             player: current[index],
             position: index,
           });
-         
+
         }
       }
     });
@@ -96,7 +121,7 @@ const Game = () => {
 
   const sortedMoves = sortMoves(listMoves, game.isAsc);
 
-  const moves_tmp = sortedMoves.map((move, step)=>{
+  const moves_tmp = sortedMoves.map((move, step) => {
 
     const desc =
       step !== null
@@ -112,13 +137,14 @@ const Game = () => {
   return (
     <div className="game">
       <div className="game-board">
-        <Board squares={current.squares} selectedSquare={game.currenPos} onClick={(i) => handleClick(i)} winPath={winner?winner.path:null}/>
+        <Board squares={current.squares} selectedSquare={game.currenPos} onClick={(i) => handleClick(i)} winPath={winner ? winner.path : null} />
       </div>
       <div className="game-info">
         <div>{status}</div>
         <ToggleButton onClick={sortHandler} isAsc={game.isAsc} />
         <ol>{moves_tmp}</ol>
       </div>
+      {showMessgae&&message}
     </div>
   );
 };

@@ -2,16 +2,17 @@ import React from "react";
 
 const Square = (props) => {
   const { value, isWin, onClick, selectedSquare } = props;
-  let classname = "square";
-  if(isWin){
-    classname='square win';
-  }
+  let status ="";
+ 
   if(selectedSquare){
-    classname="square selected";
+    status="square selected";
+  }
+  if(isWin){
+    status='square win';
   }
 
   return (
-    <button onClick={onClick} className={classname}>
+    <button onClick={onClick} className={`square ${value} ${status}`}>
       {value}
     </button>
   );
